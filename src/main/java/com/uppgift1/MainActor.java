@@ -23,12 +23,12 @@ public class MainActor extends AbstractBehavior<MainActor.Start> {
 
     public static class Start {
         public Start() {
-            //do things
+            //create workers
         }
     }
 
     private Behavior<MainActor.Start> onStart(MainActor.Start command) {
-        //add things
+        //do work with the actors
         return this;
     }
 }
