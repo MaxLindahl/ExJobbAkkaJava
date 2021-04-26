@@ -88,36 +88,30 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         System.out.println("Return message received, primes found by worker: " + command.primes);
         primesFound += command.primes;
         workersReturned++;
-        System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers-workersReturned));
+        if(workersReturned==numberOfWorkers) {
+            System.out.println("Work completed!");
+            System.out.println("Number of primes found: " + primesFound);
+        }else {
+
+            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
+        }
+
         return this;
     }
 
     private Behavior<Command> onStart() {
-        System.out.println("Start command received");
         //Create a list to store the workers in
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
             workerList.add(getContext().spawn(Worker.create(), "Worker"+i));
         }
-        System.out.println(numberOfWorkers + " Workers created");
         int startNumber = 0;
         for(ActorRef<Worker.Command> worker : workerList){
             worker.tell(new Worker.DoWork(numberToSearch, numberOfWorkers, startNumber, getContext().getSelf()));
             startNumber++;
         }
-        try {
-            while (workersReturned != numberOfWorkers) {
-                System.out.println("Working...");
-                //check every second if work is done
-                Thread.sleep(1000);
-                //wait till all workers returned, probably better way to do this
-            }
-            System.out.println("Work completed!");
-            System.out.println("Number of primes found: " + primesFound);
-        }catch(Exception e){
-            System.out.println(e);
-        }
+
         return this;
     }
 }

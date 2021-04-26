@@ -59,18 +59,15 @@ public class Worker extends AbstractBehavior<Worker.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onDoWork(DoWork command){
-        System.out.println("Work command received by worker");
-        long counter = findPrimes(command.numbersToSearch, command.skipLength);
-        System.out.println("Work completed by worker");
+        long counter = findPrimes(command.numbersToSearch, command.skipLength, command.startNumber);
         command.mainActor.tell(new MainActor.SendPrimesFound(counter));
-        System.out.println("Return message sent by worker");
         return this;
     }
 
-    static long findPrimes(long maxNumber, long skipLength) {
+    static long findPrimes(long maxNumber, long skipLength, long startNumber) {
         long counter = 0;
         boolean isDividable = false;
-        for(int number = 0; number<=maxNumber; number+=skipLength) {
+        for(long number = startNumber; number<=maxNumber; number+=skipLength) {
             for (long d = 2; d <= Math.sqrt(number); d++) {
                 if (number % d == 0)
                     isDividable = true;

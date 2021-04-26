@@ -16,7 +16,6 @@ public class Main {
         //tell it to start
         mainActor.tell(MainActor.Start.INSTANCE);
         //#main-send-messages
-
         try {
             System.out.println(">>> Press ENTER to exit <<<");
             System.in.read();
