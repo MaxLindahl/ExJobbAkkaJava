@@ -16,7 +16,9 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
     private int numberOfWorkers = 0;
     private int workersReturned = 0;
-
+    private long timeBeforeSetup;
+    private long timeAfterSetup;
+    private long timeDone;
 
 
     interface Command{}
@@ -78,21 +80,32 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
     }
 
     private Behavior<Command> onWorkerReturn(WorkerReturn command){
-        System.out.println("Return message received");
         workersReturned++;
-        System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers-workersReturned));
+        if(workersReturned==numberOfWorkers) {
+            timeDone = System.nanoTime();
+            System.out.println("Work completed!");
+            System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
+            System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
+            System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
+        }else {
+
+            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
+        }
+
         return this;
     }
 
     private Behavior<Command> onStart() {
         System.out.println("Start command received");
         //Create a list to store the workers in
+        timeBeforeSetup = System.nanoTime();
         List<ActorRef<Worker3.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
             workerList.add(getContext().spawn(Worker3.create(), "Worker"+i));
         }
         System.out.println(numberOfWorkers + " Workers created");
+        timeAfterSetup = System.nanoTime();
         for(ActorRef<Worker3.Command> worker : workerList){
             worker.tell(new Worker3.DoWork(getContext().getSelf()));
         }

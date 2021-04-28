@@ -17,6 +17,9 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
     private int numberOfWorkers = 0;
     private long primesFound = 0;
     private int workersReturned = 0;
+    private long timeBeforeSetup;
+    private long timeAfterSetup;
+    private long timeDone;
 
 
 
@@ -89,8 +92,12 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         primesFound += command.primes;
         workersReturned++;
         if(workersReturned==numberOfWorkers) {
+            timeDone = System.nanoTime();
             System.out.println("Work completed!");
             System.out.println("Number of primes found: " + primesFound);
+            System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
+            System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
+            System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
         }else {
 
             System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
@@ -101,11 +108,13 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     private Behavior<Command> onStart() {
         //Create a list to store the workers in
+        timeBeforeSetup = System.nanoTime();
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
             workerList.add(getContext().spawn(Worker.create(), "Worker"+i));
         }
+        timeAfterSetup = System.nanoTime();
         int startNumber = 0;
         for(ActorRef<Worker.Command> worker : workerList){
             worker.tell(new Worker.DoWork(numberToSearch, numberOfWorkers, startNumber, getContext().getSelf()));

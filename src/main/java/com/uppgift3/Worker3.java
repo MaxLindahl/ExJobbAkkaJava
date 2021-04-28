@@ -53,6 +53,10 @@ public class Worker3 extends AbstractBehavior<Worker3.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onDoWork(DoWork command){
+        long time1 = System.currentTimeMillis();
+        while ((time1+5000)>System.currentTimeMillis()){
+
+        }
         command.mainActor.tell(new com.uppgift3.MainActor3.WorkerReturn());
         return this;
     }
