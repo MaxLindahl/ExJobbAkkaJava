@@ -1,5 +1,6 @@
 package com.uppgift2;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
@@ -22,10 +23,12 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
     }
 
     public static class Consume implements Consumer.Command {
-        public final Object task;
+        public final Task task;
+        public final akka.actor.typed.ActorRef<MainActor2.Command> mainActor;
 
-        public Consume(Object task){
+        public Consume(Task task, ActorRef mainActor){
             this.task = task;
+            this.mainActor = mainActor;
         }
 
     }
@@ -63,6 +66,9 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
 
     private Behavior<Command> onConsume(Consume consumeTask) {
         //Consume the object?
+        consumeTask.task.consume();
+        System.out.println("Task consumed!");
+        consumeTask.mainActor.tell(MainActor2.TaskConsumed.INSTANCE);
         return this;
     }
 

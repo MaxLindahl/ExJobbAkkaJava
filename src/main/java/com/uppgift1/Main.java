@@ -6,6 +6,7 @@ import akka.actor.typed.ActorSystem;
 import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
+
         //#actor-system
         ActorSystem<MainActor.Command> mainActor = ActorSystem.create(MainActor.create(), "mainActorSystem");
         //#actor-system

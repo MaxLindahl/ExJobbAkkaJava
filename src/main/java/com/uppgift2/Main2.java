@@ -11,8 +11,7 @@ public class Main2 {
         //#actor-system
 
         //#main-send-messages
-        //set how many numbers we will search and how many workers to spawn
-        mainActor.tell(new MainActor2.SetNumberOfTasksAndNumberOfWorkers(1000, 8));
+        mainActor.tell(new MainActor2.SetNumberOfTasksAndNumberOfWorkers(1000000, 4));
         //tell it to start
         mainActor.tell(MainActor2.Start.INSTANCE);
         //#main-send-messages

@@ -6,7 +6,6 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.uppgift1.MainActor;
 
 
 public class Producer extends AbstractBehavior<Producer.Command> {
@@ -25,12 +24,10 @@ public class Producer extends AbstractBehavior<Producer.Command> {
 
     //send this producer a task to produce
     public static class Produce implements Command{
-        public final Object task;
-        public final akka.actor.typed.ActorRef<MainActor2.Command> mainActor;
+        public final akka.actor.typed.ActorRef<MessageHandler.Command> messageHandler;
 
-        public Produce(Object task, ActorRef mainActor){
-            this.task = task;
-            this.mainActor = mainActor;
+        public Produce(ActorRef messageHandler){
+            this.messageHandler = messageHandler;
         }
     }
 
@@ -68,12 +65,12 @@ public class Producer extends AbstractBehavior<Producer.Command> {
 
 
     private Behavior<Command> onProduce(Produce produceObject) {
-        //produce an object
-        //How/what do we produce?
-        Object o = new Object(); //temp produced object
-
-        //send object back
-        produceObject.mainActor.tell(new MainActor2.ReceiveProduceObject(o));
+        //produce a task
+        Task task = new Task();
+        task.setNumber();
+        System.out.println("Task produced!");
+        //send task back
+        produceObject.messageHandler.tell(new MessageHandler.ReceiveProduceObject(task));
         return this;
     }
 
