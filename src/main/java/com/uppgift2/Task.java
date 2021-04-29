@@ -13,7 +13,7 @@ public class Task {
     }
 
     public void setNumber(){
-        for(int i = 0; i<100000; i++) {
+        for(int i = 0; i<100; i++) {
             number = i;
         }
     }
