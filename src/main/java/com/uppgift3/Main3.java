@@ -2,10 +2,13 @@ package com.uppgift3;
 
 
 import akka.actor.typed.ActorSystem;
+import com.typesafe.config.ConfigFactory;
 
 import java.io.IOException;
 public class Main3 {
     public static void main(String[] args) {
+        ConfigFactory.load("src/main/resources/application.conf");
+
         //#actor-system
         ActorSystem<com.uppgift3.MainActor3.Command> mainActor = ActorSystem.create(com.uppgift3.MainActor3.create(), "mainActorSystem");
         //#actor-system

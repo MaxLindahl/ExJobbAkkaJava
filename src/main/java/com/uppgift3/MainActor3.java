@@ -2,10 +2,12 @@ package com.uppgift3;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.DispatcherSelector;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import com.typesafe.config.ConfigFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +104,8 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
         List<ActorRef<Worker3.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
-            workerList.add(getContext().spawn(Worker3.create(), "Worker"+i));
+            //workerList.add(getContext().spawn(Worker3.create(), "Worker"+i));
+            workerList.add(getContext().spawn(Worker3.create(), "Worker"+i, DispatcherSelector.fromConfig("my-dispatcher")));
         }
         System.out.println(numberOfWorkers + " Workers created");
         timeAfterSetup = System.nanoTime();
