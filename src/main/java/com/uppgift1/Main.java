@@ -13,7 +13,7 @@ public class Main {
 
         //#main-send-messages
         //set how many numbers we will search and how many workers to spawn
-        mainActor.tell(new MainActor.SetNumbersToSearchAndNumberOfWorkers(1000000, 8));
+        mainActor.tell(new MainActor.SetNumbersToSearchAndNumberOfWorkers(10000000, 8));
         //tell it to start
         mainActor.tell(MainActor.Start.INSTANCE);
         //#main-send-messages

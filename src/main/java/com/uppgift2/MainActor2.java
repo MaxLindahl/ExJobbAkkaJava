@@ -25,6 +25,9 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     private ArrayList<ActorRef<Consumer.Command>> consumers = new ArrayList<>();
     private ArrayList<Task> tasks = new ArrayList<>();
     private ActorRef<MessageHandler.Command> messageHandler;
+    private long timeBeforeSetup;
+    private long timeAfterSetup;
+    private long timeDone;
 
 
 
@@ -89,7 +92,11 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
         tasksFinished++;
         System.out.println(tasksFinished + " Tasks currently finished!");
         if(tasksFinished==numberOfTasks){
+            timeDone = System.nanoTime();
             System.out.println("All tasks finished!");
+            System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
+            System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
+            System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
         }
         return this;
     }
@@ -104,12 +111,14 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
         //do things
         //spawn consumers/producers
         //prob only works with even number of workers:)
+        timeBeforeSetup = System.nanoTime();
         for(int i = 0; i < numberOfWorkers/2; i++){
             consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i));
             producers.add(getContext().spawn(Producer.create(), "Producer"+i));
         }
         messageHandler = getContext().spawn(MessageHandler.create(), "MessageHandler");
         messageHandler.tell(new MessageHandler.SetupThings(consumers, numberOfWorkers, getContext().getSelf()));
+        timeAfterSetup = System.nanoTime();
         for(int i = 0; i<numberOfTasks; i++){
             tellProducerToProduce();
         }

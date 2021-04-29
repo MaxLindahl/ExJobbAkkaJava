@@ -54,10 +54,15 @@ public class Worker3 extends AbstractBehavior<Worker3.Command> {
 
     private Behavior<Command> onDoWork(DoWork command){
         System.out.println("zug zug");
-        long time1 = System.currentTimeMillis();
-        while ((time1+5000)>System.currentTimeMillis()){
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        //long time1 = System.currentTimeMillis();
+        //while ((time1+5000)>System.currentTimeMillis()){
+//
+        //}
         command.mainActor.tell(new com.uppgift3.MainActor3.WorkerReturn());
         return this;
     }

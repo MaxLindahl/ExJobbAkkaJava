@@ -11,7 +11,7 @@ public class Main2 {
         //#actor-system
 
         //#main-send-messages
-        mainActor.tell(new MainActor2.SetNumberOfTasksAndNumberOfWorkers(1000000, 4));
+        mainActor.tell(new MainActor2.SetNumberOfTasksAndNumberOfWorkers(1000000, 8));
         //tell it to start
         mainActor.tell(MainActor2.Start.INSTANCE);
         //#main-send-messages
