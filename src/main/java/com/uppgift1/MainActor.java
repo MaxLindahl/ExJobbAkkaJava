@@ -22,7 +22,6 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
     private long timeDone;
 
 
-
     interface Command{}
 
     /////////////////////////////////////////// Commands we can receive //////////////////////////////////////////////////////////
@@ -34,10 +33,12 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
     public static class SetNumbersToSearchAndNumberOfWorkers implements Command {
         public final long numbersToSearch;
         public final int numberOfWorkers;
+        public final long timeBeforeSetup;
 
-        public SetNumbersToSearchAndNumberOfWorkers(long numbersToSearch, int numberOfWorkers){
+        public SetNumbersToSearchAndNumberOfWorkers(long numbersToSearch, int numberOfWorkers, long timeBeforeSetup){
             this.numbersToSearch = numbersToSearch;
             this.numberOfWorkers = numberOfWorkers;
+            this.timeBeforeSetup = timeBeforeSetup;
         }
     }
 
@@ -84,6 +85,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
     private Behavior<Command> onSetNumbersToSearchAndNumberOfWorkers(SetNumbersToSearchAndNumberOfWorkers command){
         numberToSearch = command.numbersToSearch;
         numberOfWorkers = command.numberOfWorkers;
+        timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
 
@@ -108,7 +110,6 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     private Behavior<Command> onStart() {
         //Create a list to store the workers in
-        timeBeforeSetup = System.nanoTime();
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){

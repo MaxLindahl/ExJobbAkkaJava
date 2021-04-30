@@ -46,10 +46,12 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     public static class SetNumberOfTasksAndNumberOfWorkers implements Command {
         public final long numberOfTasks;
         public final int numberOfWorkers;
+       public final long timeBeforeSetup;
 
-        public SetNumberOfTasksAndNumberOfWorkers(long numberOfTasks, int numberOfWorkers){
+        public SetNumberOfTasksAndNumberOfWorkers(long numberOfTasks, int numberOfWorkers, long timeBeforeSetup){
             this.numberOfTasks = numberOfTasks;
             this.numberOfWorkers = numberOfWorkers;
+            this.timeBeforeSetup = timeBeforeSetup;
         }
     }
 
@@ -104,6 +106,7 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     private Behavior<Command> onSetNumberOfTasksAndNumberOfWorkers(SetNumberOfTasksAndNumberOfWorkers command) {
         numberOfTasks = command.numberOfTasks;
         numberOfWorkers = command.numberOfWorkers;
+        timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
 
@@ -111,7 +114,6 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
         //do things
         //spawn consumers/producers
         //prob only works with even number of workers:)
-        timeBeforeSetup = System.nanoTime();
         for(int i = 0; i < numberOfWorkers/2; i++){
             consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i));
             producers.add(getContext().spawn(Producer.create(), "Producer"+i));

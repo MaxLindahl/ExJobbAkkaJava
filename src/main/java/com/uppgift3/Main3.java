@@ -7,6 +7,7 @@ import com.typesafe.config.ConfigFactory;
 import java.io.IOException;
 public class Main3 {
     public static void main(String[] args) {
+        long timeBeforeSetup = System.nanoTime();
         ConfigFactory.load("src/main/resources/application.conf");
 
         //#actor-system
@@ -15,16 +16,10 @@ public class Main3 {
 
         //#main-send-messages
         //set how many numbers we will search and how many workers to spawn
-        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(100000));
+        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(100000, timeBeforeSetup));
         //tell it to start
         mainActor.tell(com.uppgift3.MainActor3.Start.INSTANCE);
         //#main-send-messages
-        try {
-            System.out.println(">>> Press ENTER to exit <<<");
-            System.in.read();
-        } catch (IOException ignored) {
-        } finally {
-            mainActor.terminate();
-        }
+
     }
 }

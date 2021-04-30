@@ -7,10 +7,11 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.typesafe.config.ConfigFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static akka.actor.TypedActor.self;
 
 public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
@@ -34,9 +35,11 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
     public static class SetNumberOfWorkers implements Command {
 
         public final int numberOfWorkers;
+        public final long timeBeforeSetup;
 
-        public SetNumberOfWorkers(int numberOfWorkers){
+        public SetNumberOfWorkers(int numberOfWorkers,long timeBeforeSetup){
             this.numberOfWorkers = numberOfWorkers;
+            this.timeBeforeSetup = timeBeforeSetup;
         }
     }
 
@@ -78,6 +81,7 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
     private Behavior<Command> onSetNumberOfWorkers(SetNumberOfWorkers command){
         numberOfWorkers = command.numberOfWorkers;
+        timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
 
@@ -100,7 +104,6 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
     private Behavior<Command> onStart() {
         System.out.println("Start command received");
         //Create a list to store the workers in
-        timeBeforeSetup = System.nanoTime();
         List<ActorRef<Worker3.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){

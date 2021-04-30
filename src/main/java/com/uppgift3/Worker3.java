@@ -59,10 +59,7 @@ public class Worker3 extends AbstractBehavior<Worker3.Command> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //long time1 = System.currentTimeMillis();
-        //while ((time1+5000)>System.currentTimeMillis()){
-//
-        //}
+
         command.mainActor.tell(new com.uppgift3.MainActor3.WorkerReturn());
         return this;
     }
