@@ -15,7 +15,7 @@ public class Main3 {
 
         //#main-send-messages
         //set how many numbers we will search and how many workers to spawn
-        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(3000));
+        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(100000));
         //tell it to start
         mainActor.tell(com.uppgift3.MainActor3.Start.INSTANCE);
         //#main-send-messages
