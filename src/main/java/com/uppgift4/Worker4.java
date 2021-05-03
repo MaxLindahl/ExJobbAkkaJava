@@ -13,7 +13,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     //the bank we will work with
     private ActorRef<Bank.Command> bank;
     //how many times we want to interact with the bank per loop
-    private int loops = 10000;
+    private int loops = 1000000;
     private int accountsCreated = 8;
 
     interface Command{}
