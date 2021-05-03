@@ -19,7 +19,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     //references to all workers
     private ArrayList<ActorRef<Worker4.Command>> workers = new ArrayList<>();
     //accounts we will create in the bank(prob need to change accountsCreated in Worker4 if you touch this :)
-    private int accountsToCreate = 400;
+    private int accountsToCreate = 8;
     //track how many workers have completed the work
     private int workersFinished = 0;
     private long timeBeforeSetup;
@@ -149,7 +149,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
 
         //create workers (actors who will interact with the bank)
         for(int i = 0; i < numberOfWorkers; i++){
-            workers.add(getContext().spawn(Worker4.create(), "Worker"+i, DispatcherSelector.fromConfig("my-dispatcher")));
+            workers.add(getContext().spawn(Worker4.create(), "Worker"+i));
         }
         //tell the workers where to find the bank
         for(int i = 0; i < numberOfWorkers; i++){
