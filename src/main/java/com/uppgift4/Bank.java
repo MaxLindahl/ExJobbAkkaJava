@@ -100,7 +100,6 @@ public class Bank extends AbstractBehavior<Bank.Command> {
 
     private Behavior<Command> onDepositMoneyToAccount(DepositMoneyToAccount depositMoneyToAccount){
         accounts.get(depositMoneyToAccount.id).depositMoney(depositMoneyToAccount.money);
-
         return this;
     }
 

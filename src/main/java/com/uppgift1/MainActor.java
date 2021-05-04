@@ -2,6 +2,7 @@ package com.uppgift1;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.DispatcherSelector;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -90,7 +91,6 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
     }
 
     private Behavior<Command> onSendPrimesFound(SendPrimesFound command){
-        System.out.println("Return message received, primes found by worker: " + command.primes);
         primesFound += command.primes;
         workersReturned++;
         if(workersReturned==numberOfWorkers) {
@@ -100,8 +100,6 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
             System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
-        }else {
-            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
         }
         return this;
     }
@@ -111,7 +109,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
-            workerList.add(getContext().spawn(Worker.create(), "Worker"+i));
+            workerList.add(getContext().spawn(Worker.create(), "Worker"+i, DispatcherSelector.fromConfig("first-dispatcher")));
         }
         timeAfterSetup = System.nanoTime();
         int startNumber = 0;
