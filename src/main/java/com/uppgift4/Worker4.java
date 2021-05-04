@@ -12,27 +12,19 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
 
     //the bank we will work with
     private ActorRef<Bank.Command> bank;
+    private ActorRef<MainActor4.Command> mainActor;
     //how many times we want to interact with the bank per loop
-    private int loops = 1000000;
-    private int accountsCreated = 8;
+    private int loops = 100000;
+    private int accountsCreated = 10;
 
     interface Command{}
 
     /////////////////////////////////////////// Commands we can receive //////////////////////////////////////////////////////////
 
-    public static class Start implements  Command {
-        ActorRef<MainActor4.Command> mainActor;
-        public Start(ActorRef mainActor){
-            this.mainActor = mainActor;
-        }
+    public enum Start implements Command {
+        INSTANCE
     }
 
-    public static class SetupBank implements Command {
-        ActorRef<Bank.Command> bank;
-        public SetupBank(ActorRef bank){
-            this.bank = bank;
-        }
-    }
 
 
     /////////////////////////////////////////// Handle the received message //////////////////////////////////////////////////////////
@@ -40,8 +32,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     @Override
     public Receive<Command> createReceive() {
         return newReceiveBuilder()
-                .onMessage(Start.class, this::onStart)
-                .onMessage(SetupBank.class, this::onSetupBank)
+                .onMessageEquals(Start.INSTANCE, this::onStart)
                 .build();
 
     }
@@ -50,8 +41,12 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
      * Constructor
      * @param context
      */
-    private Worker4(ActorContext<Command> context) {
+    private Worker4(ActorContext<Command> context, int loops, int accounts, ActorRef mainActor, ActorRef bank) {
         super(context);
+        this.loops = loops;
+        this.accountsCreated = accounts;
+        this.mainActor = mainActor;
+        this.bank = bank;
     }
 
 
@@ -59,46 +54,41 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
      * Factory method
      * @return
      */
-    public static Behavior<Command> create() {
-        return Behaviors.setup(Worker4::new);
+    public static Behavior<Command> create(int loops, int accounts, ActorRef mainActor, ActorRef bank) {
+        return Behaviors.setup(context -> new Worker4(context, loops, accounts, mainActor, bank));
     }
 
 
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
 
-    private Behavior<Command> onSetupBank(SetupBank setupBank) {
-        bank = setupBank.bank;
-        return this;
-    }
 
-    private Behavior<Command> onStart(Start start) {
+    private Behavior<Command> onStart() {
         int currentAccount = 0;
 
         //loop deposit 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.DepositMoneyToAccount(currentAccount+"",10));
+            bank.tell(new Bank.DepositMoneyToAccount(currentAccount,10));
             currentAccount++;
             if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
         //loop withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount+"", 10));
+            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
             currentAccount++;
             if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
         //loop deposit and withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.DepositMoneyToAccount(currentAccount+"", 10));
-            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount+"", 10));
+            bank.tell(new Bank.DepositMoneyToAccount(currentAccount, 10));
+            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
             currentAccount++;
             if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
-
-        start.mainActor.tell(MainActor4.WorkFinished.INSTANCE);
+        mainActor.tell(MainActor4.WorkFinished.INSTANCE);
         return this;
     }
 

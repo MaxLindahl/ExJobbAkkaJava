@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import com.uppgift3.Worker3;
 
 import java.util.ArrayList;
 
@@ -19,9 +20,10 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     //references to all workers
     private ArrayList<ActorRef<Worker4.Command>> workers = new ArrayList<>();
     //accounts we will create in the bank(prob need to change accountsCreated in Worker4 if you touch this :)
-    private int accountsToCreate = 8;
+    private int accountsToCreate = 0;
     //track how many workers have completed the work
     private int workersFinished = 0;
+    private int loops = 0;
     private long timeBeforeSetup;
     private long timeAfterSetup;
     private long timeDone;
@@ -41,24 +43,19 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     }
 
     //send from main to set the number of workers to use
-    public static class SetNumberOfWorkers implements Command {
-        int number;
-        long timeBeforeSetup;
-        public SetNumberOfWorkers(int number, long timeBeforeSetup){
+    public static class SetNumberOfWorkersAndAccountsAndLoops implements Command {
+        public final int number;
+        public final int accounts;
+        public final int loops;
+        public final long timeBeforeSetup;
+        public SetNumberOfWorkersAndAccountsAndLoops(int number, int accounts, int loops, long timeBeforeSetup){
             this.number = number;
+            this.accounts = accounts;
+            this.loops = loops;
             this.timeBeforeSetup = timeBeforeSetup;
         }
     }
 
-    //sent from the bank to give us the money in a given bank account
-    public static class AccountMoney implements Command {
-        int money;
-        String id;
-        public AccountMoney(int money, String id){
-            this.money = money;
-            this.id = id;
-        }
-    }
 
 
     /////////////////////////////////////////// Handle the received message //////////////////////////////////////////////////////////
@@ -68,8 +65,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
         return newReceiveBuilder()
                 .onMessageEquals(Start.INSTANCE, this::onStart)  //Call onStart when Start.INSTANCE is received
                 .onMessageEquals(WorkFinished.INSTANCE, this::onWorkFinished)
-                .onMessage(SetNumberOfWorkers.class, this::onSetNumberOfWorkers)
-                .onMessage(AccountMoney.class, this::onAccountMoney)
+                .onMessage(SetNumberOfWorkersAndAccountsAndLoops.class, this::onSetNumberOfWorkersAndAccountsAndLoops)
                 .build();
 
     }
@@ -95,23 +91,19 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
 
-    //should all return as 0 money since we withdraw the same amount of money we deposit in worker4.onStart
-    private Behavior<MainActor4.Command> onAccountMoney(AccountMoney accountMoney){
-        System.out.println("Account id: " + accountMoney.id + " has " + accountMoney.money + " money in it!");
 
-
-        return this;
-    }
 
     /**
      * Setup method used from main to set the amount of workers we want to use
      * probably need to implement custom dispatcher again if we want to use more than 8 workers
-     * @param setNumberOfWorkers
+     * @param setNumberOfWorkersAndAccountsAndLoops
      * @return
      */
-    private Behavior<MainActor4.Command> onSetNumberOfWorkers(SetNumberOfWorkers setNumberOfWorkers){
-        this.numberOfWorkers = setNumberOfWorkers.number;
-        timeBeforeSetup = setNumberOfWorkers.timeBeforeSetup;
+    private Behavior<MainActor4.Command> onSetNumberOfWorkersAndAccountsAndLoops(SetNumberOfWorkersAndAccountsAndLoops setNumberOfWorkersAndAccountsAndLoops){
+        this.numberOfWorkers = setNumberOfWorkersAndAccountsAndLoops.number;
+        this.accountsToCreate = setNumberOfWorkersAndAccountsAndLoops.accounts;
+        this.loops = setNumberOfWorkersAndAccountsAndLoops.loops;
+        this.timeBeforeSetup = setNumberOfWorkersAndAccountsAndLoops.timeBeforeSetup;
         return this;
     }
 
@@ -122,16 +114,16 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
      */
     private Behavior<Command> onWorkFinished() {
         workersFinished++;
-        System.out.println("A worker finished");
         if(workersFinished==numberOfWorkers){
             timeDone = System.nanoTime();
             System.out.println("All workers have finished!");
             System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
-            for(int i = 0; i < accountsToCreate; i++)
-                bank.tell(new Bank.GetMoneyFromAccount(i+"", getContext().getSelf()));
-
+            for(int i = 0; i < accountsToCreate; i++) {
+                System.out.println("Message to get money sent");
+                bank.tell(new Bank.GetMoneyFromAccount(i, getContext().getSelf()));
+            }
         }
 
         return this;
@@ -146,19 +138,15 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
         for(int i = 0; i < accountsToCreate; i++) {
             bank.tell(new Bank.CreateAccount(0));
         }
-
         //create workers (actors who will interact with the bank)
         for(int i = 0; i < numberOfWorkers; i++){
-            workers.add(getContext().spawn(Worker4.create(), "Worker"+i));
+            workers.add(getContext().spawn(Worker4.create(loops, accountsToCreate, getContext().getSelf(), bank), "Worker"+i, DispatcherSelector.fromConfig("fourth-dispatcher")));
         }
-        //tell the workers where to find the bank
-        for(int i = 0; i < numberOfWorkers; i++){
-            workers.get(i).tell(new Worker4.SetupBank(bank));
-        }
+
         timeAfterSetup = System.nanoTime();
         //tell the workers to start working, send reference to ourselves so it can message us when work is done
         for (int i = 0; i< numberOfWorkers; i++){
-            workers.get(i).tell(new Worker4.Start(getContext().getSelf()));
+            workers.get(i).tell(Worker4.Start.INSTANCE);
         }
         return this;
     }

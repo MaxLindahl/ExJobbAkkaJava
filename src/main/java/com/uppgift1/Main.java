@@ -14,7 +14,7 @@ public class Main {
         //#main-send-messages
         //set how many numbers we will search and how many workers to spawn
 
-        mainActor.tell(new MainActor.SetNumbersToSearchAndNumberOfWorkers(1000, 8, timeBeforeSetup));
+        mainActor.tell(new MainActor.SetNumbersToSearchAndNumberOfWorkers(1000000, 8, timeBeforeSetup));
         //tell it to start
         mainActor.tell(MainActor.Start.INSTANCE);
         //#main-send-messages

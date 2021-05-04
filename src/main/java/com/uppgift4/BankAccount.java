@@ -1,10 +1,10 @@
 package com.uppgift4;
 
 public class BankAccount {
-    private String id;
+    private int id;
     private int money;
 
-    public BankAccount(String id, int money){
+    public BankAccount(int id, int money){
         this.id = id;
         this.money = money;
     }
@@ -17,7 +17,7 @@ public class BankAccount {
         this.money-=money;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
