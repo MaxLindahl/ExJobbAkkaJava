@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Bank extends AbstractBehavior<Bank.Command> {
 
     //actor variables
-    ArrayList<BankAccount> accounts = new ArrayList<>();
+    ArrayList<BankAccount> accountList = new ArrayList<>();
 
 
     interface Command{}
@@ -21,9 +21,9 @@ public class Bank extends AbstractBehavior<Bank.Command> {
 
 
     public static class CreateAccount implements Command {
-        private final int money;
-        public CreateAccount(int money){
-            this.money = money;
+        private final int balance;
+        public CreateAccount(int balance){
+            this.balance = balance;
         }
     }
 
@@ -39,19 +39,19 @@ public class Bank extends AbstractBehavior<Bank.Command> {
 
     public static class DepositMoneyToAccount implements Command {
         private final int id;
-        private final int money;
-        public DepositMoneyToAccount(int id, int money){
+        private final int balance;
+        public DepositMoneyToAccount(int id, int balance){
             this.id = id;
-            this.money = money;
+            this.balance = balance;
         }
     }
 
     public static class WithdrawMoneyFromAccount implements Command {
         private final int id;
-        private final int money;
-        public WithdrawMoneyFromAccount(int id, int money){
+        private final int balance;
+        public WithdrawMoneyFromAccount(int id, int balance){
             this.id = id;
-            this.money = money;
+            this.balance = balance;
         }
     }
 
@@ -88,24 +88,24 @@ public class Bank extends AbstractBehavior<Bank.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onCreateAccount(CreateAccount createAccount){
-        accounts.add(new BankAccount(accounts.size(), createAccount.money));
+        accountList.add(new BankAccount(accountList.size(), createAccount.balance));
         return this;
     }
 
-    private Behavior<Command> onGetMoneyFromAccount(GetMoneyFromAccount getMoneyFromAccount){
-        int money = accounts.get(getMoneyFromAccount.id).getMoney();
-        System.out.println("Account " + getMoneyFromAccount.id + " has " + money + " money");
+    private Behavior<Command> onGetMoneyFromAccount(GetMoneyFromAccount getBalanceFromAccount){
+        int balance = accountList.get(getBalanceFromAccount.id).getBalance();
+        System.out.println("Account " + getBalanceFromAccount.id + " has " + balance + " balance");
         return this;
     }
 
-    private Behavior<Command> onDepositMoneyToAccount(DepositMoneyToAccount depositMoneyToAccount){
-        accounts.get(depositMoneyToAccount.id).depositMoney(depositMoneyToAccount.money);
+    private Behavior<Command> onDepositMoneyToAccount(DepositMoneyToAccount depositToAccount){
+        accountList.get(depositToAccount.id).deposit(depositToAccount.balance);
 
         return this;
     }
 
-    private Behavior<Command> onWithdrawMoneyFromAccount(WithdrawMoneyFromAccount withdrawMoneyFromAccount){
-        accounts.get(withdrawMoneyFromAccount.id).withdrawMoney(withdrawMoneyFromAccount.money);
+    private Behavior<Command> onWithdrawMoneyFromAccount(WithdrawMoneyFromAccount withdrawFromAccount){
+        accountList.get(withdrawFromAccount.id).withdraw(withdrawFromAccount.balance);
 
         return this;
     }

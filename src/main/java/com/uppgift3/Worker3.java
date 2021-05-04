@@ -53,7 +53,6 @@ public class Worker3 extends AbstractBehavior<Worker3.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onDoWork(DoWork command){
-        System.out.println("zug zug");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {

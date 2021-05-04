@@ -4,7 +4,6 @@ package com.uppgift3;
 import akka.actor.typed.ActorSystem;
 import com.typesafe.config.ConfigFactory;
 
-import java.io.IOException;
 public class Main3 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();

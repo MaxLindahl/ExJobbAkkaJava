@@ -11,13 +11,11 @@ import akka.actor.typed.javadsl.Receive;
 import java.util.ArrayList;
 import java.util.List;
 
-import static akka.actor.TypedActor.self;
-
 public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
     //Actor variables
 
-    private int numberOfWorkers = 0;
+    private int workers = 0;
     private int workersReturned = 0;
     private long timeBeforeSetup;
     private long timeAfterSetup;
@@ -34,11 +32,11 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
     public static class SetNumberOfWorkers implements Command {
 
-        public final int numberOfWorkers;
+        public final int workers;
         public final long timeBeforeSetup;
 
         public SetNumberOfWorkers(int numberOfWorkers,long timeBeforeSetup){
-            this.numberOfWorkers = numberOfWorkers;
+            this.workers = numberOfWorkers;
             this.timeBeforeSetup = timeBeforeSetup;
         }
     }
@@ -80,37 +78,31 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onSetNumberOfWorkers(SetNumberOfWorkers command){
-        numberOfWorkers = command.numberOfWorkers;
+        workers = command.workers;
         timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
 
     private Behavior<Command> onWorkerReturn(WorkerReturn command){
         workersReturned++;
-        if(workersReturned==numberOfWorkers) {
+        if(workersReturned== workers) {
             timeDone = System.nanoTime();
             System.out.println("Work completed!");
             System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
-        }else {
-
-            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
         }
-
         return this;
     }
 
     private Behavior<Command> onStart() {
-        System.out.println("Start command received");
         //Create a list to store the workers in
         List<ActorRef<Worker3.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
-        for(int i = 0; i < numberOfWorkers; i++){
+        for(int i = 0; i < workers; i++){
             //workerList.add(getContext().spawn(Worker3.create(), "Worker4"+i));
             workerList.add(getContext().spawn(Worker3.create(), "Worker"+i, DispatcherSelector.fromConfig("my-dispatcher")));
         }
-        System.out.println(numberOfWorkers + " Workers created");
         timeAfterSetup = System.nanoTime();
         for(ActorRef<Worker3.Command> worker : workerList){
             worker.tell(new Worker3.DoWork(getContext().getSelf()));

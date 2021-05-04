@@ -14,7 +14,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     //Actor variables
     private long numberToSearch = 0;
-    private int numberOfWorkers = 0;
+    private int workers = 0;
     private long primesFound = 0;
     private int workersReturned = 0;
     private long timeBeforeSetup;
@@ -84,7 +84,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     private Behavior<Command> onSetNumbersToSearchAndNumberOfWorkers(SetNumbersToSearchAndNumberOfWorkers command){
         numberToSearch = command.numbersToSearch;
-        numberOfWorkers = command.numberOfWorkers;
+        workers = command.numberOfWorkers;
         timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
@@ -93,7 +93,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         System.out.println("Return message received, primes found by worker: " + command.primes);
         primesFound += command.primes;
         workersReturned++;
-        if(workersReturned==numberOfWorkers) {
+        if(workersReturned== workers) {
             timeDone = System.nanoTime();
             System.out.println("Work completed!");
             System.out.println("Number of primes found: " + primesFound);
@@ -101,7 +101,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
         }else {
-            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (numberOfWorkers - workersReturned));
+            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (workers - workersReturned));
         }
         return this;
     }
@@ -110,13 +110,13 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         //Create a list to store the workers in
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
-        for(int i = 0; i < numberOfWorkers; i++){
+        for(int i = 0; i < workers; i++){
             workerList.add(getContext().spawn(Worker.create(), "Worker"+i));
         }
         timeAfterSetup = System.nanoTime();
         int startNumber = 0;
         for(ActorRef<Worker.Command> worker : workerList){
-            worker.tell(new Worker.DoWork(numberToSearch, numberOfWorkers, startNumber, getContext().getSelf()));
+            worker.tell(new Worker.DoWork(numberToSearch, workers, startNumber, getContext().getSelf()));
             startNumber++;
         }
 

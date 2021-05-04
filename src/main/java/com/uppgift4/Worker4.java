@@ -14,8 +14,8 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     private ActorRef<Bank.Command> bank;
     private ActorRef<MainActor4.Command> mainActor;
     //how many times we want to interact with the bank per loop
-    private int loops = 100000;
-    private int accountsCreated = 10;
+    private int loops;
+    private int accounts;
 
     interface Command{}
 
@@ -44,7 +44,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     private Worker4(ActorContext<Command> context, int loops, int accounts, ActorRef mainActor, ActorRef bank) {
         super(context);
         this.loops = loops;
-        this.accountsCreated = accounts;
+        this.accounts = accounts;
         this.mainActor = mainActor;
         this.bank = bank;
     }
@@ -70,14 +70,14 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
         for(int i = 0; i < loops; i++){
             bank.tell(new Bank.DepositMoneyToAccount(currentAccount,10));
             currentAccount++;
-            if(currentAccount==accountsCreated)
+            if(currentAccount== accounts)
                 currentAccount = 0;
         }
         //loop withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
             bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
             currentAccount++;
-            if(currentAccount==accountsCreated)
+            if(currentAccount== accounts)
                 currentAccount = 0;
         }
         //loop deposit and withdraw 10 moneys into alternating accounts
@@ -85,7 +85,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
             bank.tell(new Bank.DepositMoneyToAccount(currentAccount, 10));
             bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
             currentAccount++;
-            if(currentAccount==accountsCreated)
+            if(currentAccount== accounts)
                 currentAccount = 0;
         }
         mainActor.tell(MainActor4.WorkFinished.INSTANCE);

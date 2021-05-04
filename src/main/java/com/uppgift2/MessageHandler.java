@@ -101,10 +101,9 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
 
     //prob only works properly with even number of workers
     private void sendTaskToConsumer(Task task){
-        consumers.get(consumerCounter).tell(new Consumer.Consume(task, mainActor));
-        if(consumerCounter==(numberOfWorkers/2)-1)
+        consumers.get(consumerCounter).tell(new Consumer.Consume(task,mainActor));
+        if(++consumerCounter == consumers.size())
             consumerCounter = 0;
-        else
-            consumerCounter++;
+
     }
 }

@@ -22,13 +22,5 @@ public class Main4 {
         //tell it to start
         mainActor.tell(MainActor4.Start.INSTANCE);
         //#main-send-messages
-        try {
-            System.out.println(">>> Press ENTER to exit <<<");
-            System.in.read();
-        } catch (
-                IOException ignored) {
-        } finally {
-            mainActor.terminate();
-        }
     }
 }
