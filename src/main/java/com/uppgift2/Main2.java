@@ -1,9 +1,7 @@
 package com.uppgift2;
 
-
 import akka.actor.typed.ActorSystem;
 
-import java.io.IOException;
 public class Main2 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();

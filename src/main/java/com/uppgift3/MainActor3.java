@@ -101,7 +101,7 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
         //Spawn workers and store them in the list
         for(int i = 0; i < workers; i++){
             //workerList.add(getContext().spawn(Worker3.create(), "Worker4"+i));
-            workerList.add(getContext().spawn(Worker3.create(), "Worker"+i, DispatcherSelector.fromConfig("my-dispatcher")));
+            workerList.add(getContext().spawn(Worker3.create(), "Worker"+i, DispatcherSelector.fromConfig("third-dispatcher")));
         }
         timeAfterSetup = System.nanoTime();
         for(ActorRef<Worker3.Command> worker : workerList){

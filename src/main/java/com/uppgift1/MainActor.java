@@ -2,6 +2,7 @@ package com.uppgift1;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.DispatcherSelector;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -14,7 +15,7 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     //Actor variables
     private long numberToSearch = 0;
-    private int workers = 0;
+    private int numberOfWorkers = 0;
     private long primesFound = 0;
     private int workersReturned = 0;
     private long timeBeforeSetup;
@@ -84,24 +85,21 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
 
     private Behavior<Command> onSetNumbersToSearchAndNumberOfWorkers(SetNumbersToSearchAndNumberOfWorkers command){
         numberToSearch = command.numbersToSearch;
-        workers = command.numberOfWorkers;
+        numberOfWorkers = command.numberOfWorkers;
         timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
 
     private Behavior<Command> onSendPrimesFound(SendPrimesFound command){
-        System.out.println("Return message received, primes found by worker: " + command.primes);
         primesFound += command.primes;
         workersReturned++;
-        if(workersReturned== workers) {
+        if(workersReturned==numberOfWorkers) {
             timeDone = System.nanoTime();
             System.out.println("Work completed!");
             System.out.println("Number of primes found: " + primesFound);
             System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
-        }else {
-            System.out.println("Workers currently returned: " + workersReturned + " || Workers still working: " + (workers - workersReturned));
         }
         return this;
     }
@@ -110,13 +108,13 @@ public class MainActor extends AbstractBehavior<MainActor.Command> {
         //Create a list to store the workers in
         List<ActorRef<Worker.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
-        for(int i = 0; i < workers; i++){
-            workerList.add(getContext().spawn(Worker.create(), "Worker"+i));
+        for(int i = 0; i < numberOfWorkers; i++){
+            workerList.add(getContext().spawn(Worker.create(), "Worker"+i, DispatcherSelector.fromConfig("first-dispatcher")));
         }
         timeAfterSetup = System.nanoTime();
         int startNumber = 0;
         for(ActorRef<Worker.Command> worker : workerList){
-            worker.tell(new Worker.DoWork(numberToSearch, workers, startNumber, getContext().getSelf()));
+            worker.tell(new Worker.DoWork(numberToSearch, numberOfWorkers, startNumber, getContext().getSelf()));
             startNumber++;
         }
 

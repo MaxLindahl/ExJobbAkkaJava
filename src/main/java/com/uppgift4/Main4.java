@@ -3,12 +3,10 @@ package com.uppgift4;
 import akka.actor.typed.ActorSystem;
 import com.typesafe.config.ConfigFactory;
 
-import java.io.IOException;
-
 public class Main4 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
-        int workers = 10000;
+        int workers = 1000;
         int accounts = 1;
         int loops = 1000;
 

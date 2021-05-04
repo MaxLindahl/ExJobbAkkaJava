@@ -17,13 +17,10 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     //Actor variables
     private long numberOfTasks = 0;
     private long tasksFinished = 0;
-    private int producersWorking = 0;
     private int numberOfWorkers = 0;
     private int producerCounter = 0;
-    private int consumerCounter = 0;
     private ArrayList<ActorRef<Producer.Command>> producers = new ArrayList<>();
     private ArrayList<ActorRef<Consumer.Command>> consumers = new ArrayList<>();
-    private ArrayList<Task> tasks = new ArrayList<>();
     private ActorRef<MessageHandler.Command> messageHandler;
     private long timeBeforeSetup;
     private long timeAfterSetup;
@@ -128,7 +125,6 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
         return this;
     }
 
-    ////random funcs
 
     //prob only works properly with even number of workers
     private void tellProducerToProduce(){
