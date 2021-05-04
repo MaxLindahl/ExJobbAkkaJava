@@ -2,6 +2,7 @@ package com.uppgift2;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.DispatcherSelector;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -112,10 +113,10 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
         //do things
         //spawn consumers/producers
         for(int i = 0; i < noProducers; i++){
-            producers.add(getContext().spawn(Producer.create(), "Producer"+i));
+            producers.add(getContext().spawn(Producer.create(), "Producer"+i, DispatcherSelector.fromConfig("second-dispatcher")));
         }
         for(int i = 0; i < noConsumers; i++){
-            consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i));
+            consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i, DispatcherSelector.fromConfig("second-dispatcher")));
         }
         messageHandler = getContext().spawn(MessageHandler.create(), "MessageHandler");
         messageHandler.tell(new MessageHandler.SetupThings(consumers, noProducers, noConsumers, getContext().getSelf()));
