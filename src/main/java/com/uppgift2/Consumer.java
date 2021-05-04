@@ -67,7 +67,6 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
     private Behavior<Command> onConsume(Consume consumeTask) {
         //Consume the object?
         consumeTask.task.consume();
-        System.out.println("Task consumed!");
         consumeTask.mainActor.tell(MainActor2.TaskConsumed.INSTANCE);
         return this;
     }

@@ -8,7 +8,7 @@ public class Main {
         long timeBeforeSetup = System.nanoTime();
         ConfigFactory.load("src/main/resources/application.conf");
         long numbersToSearch = 10000000;
-        int numberOfWorkers = 1000;
+        int numberOfWorkers = 10000;
         //#actor-system
         ActorSystem<MainActor.Command> mainActor = ActorSystem.create(MainActor.create(), "mainActorSystem");
         //#actor-system

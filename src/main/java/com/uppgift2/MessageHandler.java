@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
 
     //Actor variables
-    private int numberOfWorkers;
+    private int noProducers;
+    private int noConsumers;
     private ArrayList<ActorRef<Consumer.Command>> consumers = new ArrayList<>();
     private int consumerCounter = 0;
     private ActorRef mainActor;
@@ -28,13 +29,15 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
     }
 
     public static class SetupThings implements MessageHandler.Command {
-        public ArrayList<ActorRef<Consumer.Command>> consumers;
-        public ActorRef mainActor;
-        public int numberOfWorkers;
+        public final ArrayList<ActorRef<Consumer.Command>> consumers;
+        public final ActorRef mainActor;
+        public final int noProducers;
+        public final int noConsumers;
 
-        SetupThings(ArrayList<ActorRef<Consumer.Command>> consumers, int numberOfWorkers, ActorRef mainActor){
+        SetupThings(ArrayList<ActorRef<Consumer.Command>> consumers, int noProducers, int noConsumers, ActorRef mainActor){
             this.consumers = consumers;
-            this.numberOfWorkers = numberOfWorkers;
+            this.noProducers = noProducers;
+            this.noConsumers = noConsumers;
             this.mainActor = mainActor;
         }
     }
@@ -82,7 +85,8 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
 
     private Behavior<Command> onSetupThings(SetupThings setups) {
         this.consumers = setups.consumers;
-        this.numberOfWorkers = setups.numberOfWorkers;
+        this.noProducers = setups.noProducers;
+        this.noConsumers = setups.noConsumers;
         this.mainActor = setups.mainActor;
         return this;
     }
@@ -101,9 +105,10 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
 
     //prob only works properly with even number of workers
     private void sendTaskToConsumer(Task task){
-        consumers.get(consumerCounter).tell(new Consumer.Consume(task,mainActor));
-        if(++consumerCounter == consumers.size())
+        consumers.get(consumerCounter).tell(new Consumer.Consume(task, mainActor));
+        if(consumerCounter==(noConsumers-1))
             consumerCounter = 0;
-
+        else
+            consumerCounter++;
     }
 }
