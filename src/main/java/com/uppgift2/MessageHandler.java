@@ -24,10 +24,6 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
 
     /////////////////////////////////////////// Commands we can receive //////////////////////////////////////////////////////////
 
-    public enum Start implements Command {
-        INSTANCE
-    }
-
     public static class SetupThings implements MessageHandler.Command {
         public final ArrayList<ActorRef<Consumer.Command>> consumers;
         public final ActorRef mainActor;
@@ -55,7 +51,6 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
     @Override
     public Receive<Command> createReceive() {
         return newReceiveBuilder()
-                .onMessageEquals(Start.INSTANCE, this::onStart)  //Call onStart when Start.INSTANCE is received
                 .onMessage(ReceiveProduceObject.class, this::onReceiveProduceObject)
                 .onMessage(SetupThings.class, this::onSetupThings)
                 .build();
@@ -96,10 +91,6 @@ public class MessageHandler extends AbstractBehavior<MessageHandler.Command> {
         return this;
     }
 
-    private Behavior<Command> onStart() {
-        //do things
-        return this;
-    }
 
     /////////////////////////////////////////////////////////////////////////
 

@@ -5,10 +5,6 @@ package com.uppgift2;
 public class Task {
     private long number = 0;
 
-    public Task(){
-
-    }
-
     //set number to 1000
     public void setNumber(){
         for(int i = 0; i<100000; i++) {
