@@ -2,12 +2,10 @@ package com.uppgift2;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
-import akka.actor.typed.MailboxSelector;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
-import com.uppgift1.Worker;
 
 import java.util.ArrayList;
 
@@ -15,9 +13,10 @@ import java.util.ArrayList;
 public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
 
     //Actor variables
-    private long numberOfTasks = 0;
+    private int numberOfTasks = 0;
     private long tasksFinished = 0;
-    private int numberOfWorkers = 0;
+    private int noProducers = 0;
+    private int noConsumers = 0;
     private int producerCounter = 0;
     private ArrayList<ActorRef<Producer.Command>> producers = new ArrayList<>();
     private ArrayList<ActorRef<Consumer.Command>> consumers = new ArrayList<>();
@@ -41,13 +40,15 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     }
 
     public static class SetNumberOfTasksAndNumberOfWorkers implements Command {
-        public final long numberOfTasks;
-        public final int numberOfWorkers;
+        public final int numberOfTasks;
+        public final int noProducers;
+        public final int noConsumers;
        public final long timeBeforeSetup;
 
-        public SetNumberOfTasksAndNumberOfWorkers(long numberOfTasks, int numberOfWorkers, long timeBeforeSetup){
+        public SetNumberOfTasksAndNumberOfWorkers(int numberOfTasks, int noProducers, int noConsumers, long timeBeforeSetup){
             this.numberOfTasks = numberOfTasks;
-            this.numberOfWorkers = numberOfWorkers;
+            this.noProducers = noProducers;
+            this.noConsumers = noConsumers;
             this.timeBeforeSetup = timeBeforeSetup;
         }
     }
@@ -89,7 +90,6 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
 
     private Behavior<Command> onConsumed() {
         tasksFinished++;
-        System.out.println(tasksFinished + " Tasks currently finished!");
         if(tasksFinished==numberOfTasks){
             timeDone = System.nanoTime();
             System.out.println("All tasks finished!");
@@ -102,7 +102,8 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
 
     private Behavior<Command> onSetNumberOfTasksAndNumberOfWorkers(SetNumberOfTasksAndNumberOfWorkers command) {
         numberOfTasks = command.numberOfTasks;
-        numberOfWorkers = command.numberOfWorkers;
+        noProducers = command.noProducers;
+        noConsumers = command.noConsumers;
         timeBeforeSetup = command.timeBeforeSetup;
         return this;
     }
@@ -110,13 +111,14 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     private Behavior<Command> onStart() {
         //do things
         //spawn consumers/producers
-        //prob only works with even number of workers:)
-        for(int i = 0; i < numberOfWorkers/2; i++){
-            consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i));
+        for(int i = 0; i < noProducers; i++){
             producers.add(getContext().spawn(Producer.create(), "Producer"+i));
         }
+        for(int i = 0; i < noConsumers; i++){
+            consumers.add(getContext().spawn(Consumer.create(), "Consumer"+i));
+        }
         messageHandler = getContext().spawn(MessageHandler.create(), "MessageHandler");
-        messageHandler.tell(new MessageHandler.SetupThings(consumers, numberOfWorkers, getContext().getSelf()));
+        messageHandler.tell(new MessageHandler.SetupThings(consumers, noProducers, noConsumers, getContext().getSelf()));
         timeAfterSetup = System.nanoTime();
         for(int i = 0; i<numberOfTasks; i++){
             tellProducerToProduce();
@@ -129,7 +131,7 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     //prob only works properly with even number of workers
     private void tellProducerToProduce(){
         producers.get(producerCounter).tell(new Producer.Produce(messageHandler));
-        if(producerCounter==(numberOfWorkers/2)-1)
+        if(producerCounter==(noProducers-1))
             producerCounter = 0;
         else
             producerCounter++;

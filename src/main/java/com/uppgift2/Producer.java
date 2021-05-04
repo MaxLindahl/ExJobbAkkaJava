@@ -68,7 +68,6 @@ public class Producer extends AbstractBehavior<Producer.Command> {
         //produce a task
         Task task = new Task();
         task.setNumber();
-        System.out.println("Task produced!");
         //send task back
         produceObject.messageHandler.tell(new MessageHandler.ReceiveProduceObject(task));
         return this;

@@ -1,32 +1,38 @@
 package com.uppgift2;
 
 
-import java.util.Random;
 
 public class Task {
-    private int number = 0;
-    private int min = 100;
-    private int max = 1000;
+    private long number = 0;
 
     public Task(){
 
     }
 
+    //set number to 1000
     public void setNumber(){
-        for(int i = 0; i<100; i++) {
+        for(int i = 0; i<100000; i++) {
             number = i;
         }
+        number = number/100;
     }
 
     public void consume(){
-        findFactorial();
+        System.out.println(findPrimes());
     }
 
-    private int findFactorial(){
-        int factorial = 1;
-        for(int i = 1; i <= number; i++){
-            factorial = factorial * i;
+    private long findPrimes() {
+        long counter = 0;
+        boolean isDividable = false;
+        for(int i = 0; i<=number; i++) {
+            for (long d = 2; d <= Math.sqrt(number); d++) {
+                if (i % d == 0)
+                    isDividable = true;
+            }
+            if(isDividable == false)
+                counter++;
+            isDividable = false;
         }
-        return factorial;
+        return counter;
     }
 }
