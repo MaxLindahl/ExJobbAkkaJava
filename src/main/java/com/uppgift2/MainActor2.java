@@ -110,7 +110,6 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     }
 
     private Behavior<Command> onStart() {
-        //do things
         //spawn consumers/producers
         for(int i = 0; i < noProducers; i++){
             producers.add(getContext().spawn(Producer.create(), "Producer"+i, DispatcherSelector.fromConfig("second-dispatcher")));

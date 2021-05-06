@@ -18,10 +18,6 @@ public class Producer extends AbstractBehavior<Producer.Command> {
 
     /////////////////////////////////////////// Commands we can receive //////////////////////////////////////////////////////////
 
-    public enum Start implements Command {
-        INSTANCE
-    }
-
     //send this producer a task to produce
     public static class Produce implements Command{
         public final akka.actor.typed.ActorRef<MessageHandler.Command> messageHandler;
@@ -37,7 +33,6 @@ public class Producer extends AbstractBehavior<Producer.Command> {
     @Override
     public Receive<Command> createReceive() {
         return newReceiveBuilder()
-                .onMessageEquals(Start.INSTANCE, this::onStart)  //Call onStart when Start.INSTANCE is received
                 .onMessage(Produce.class, this::onProduce)
                 .build();
 
@@ -70,11 +65,6 @@ public class Producer extends AbstractBehavior<Producer.Command> {
         task.setNumber();
         //send task back
         produceObject.messageHandler.tell(new MessageHandler.ReceiveProduceObject(task));
-        return this;
-    }
-
-    private Behavior<Command> onStart() {
-        //do things
         return this;
     }
 }

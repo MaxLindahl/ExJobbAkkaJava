@@ -18,10 +18,6 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
 
     /////////////////////////////////////////// Commands we can receive //////////////////////////////////////////////////////////
 
-    public enum Start implements Command {
-        INSTANCE
-    }
-
     public static class Consume implements Consumer.Command {
         public final Task task;
         public final akka.actor.typed.ActorRef<MainActor2.Command> mainActor;
@@ -38,7 +34,6 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
     @Override
     public Receive<Command> createReceive() {
         return newReceiveBuilder()
-                .onMessageEquals(Start.INSTANCE, this::onStart)  //Call onStart when Start.INSTANCE is received
                 .onMessage(Consume.class, this::onConsume)
                 .build();
 
@@ -65,14 +60,9 @@ public class Consumer extends AbstractBehavior<Consumer.Command> {
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
     private Behavior<Command> onConsume(Consume consumeTask) {
-        //Consume the object?
+        //Consume the object
         consumeTask.task.consume();
         consumeTask.mainActor.tell(MainActor2.TaskConsumed.INSTANCE);
-        return this;
-    }
-
-    private Behavior<Command> onStart() {
-        //do things
         return this;
     }
 }
