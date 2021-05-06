@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory;
 public class Main3 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
-        int numberOfWorkers = 1;
+        int numberOfWorkers = 131072;
         ConfigFactory.load("src/main/resources/application.conf");
 
         //#actor-system

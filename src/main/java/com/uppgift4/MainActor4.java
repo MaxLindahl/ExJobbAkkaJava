@@ -121,8 +121,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
             for(int i = 0; i < accountsToCreate; i++) {
-                System.out.println("Message to get money sent");
-                bank.tell(new Bank.GetMoneyFromAccount(i, getContext().getSelf()));
+                //bank.tell(new Bank.GetMoneyFromAccount(i, getContext().getSelf()));
             }
         }
 
