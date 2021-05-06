@@ -6,8 +6,8 @@ import com.typesafe.config.ConfigFactory;
 public class Main4 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
-        int workers = 1000;
-        int accounts = 1;
+        int workers = 1024;
+        int accounts = 2;
         int loops = 1000;
 
         ConfigFactory.load("src/main/resources/application.conf");

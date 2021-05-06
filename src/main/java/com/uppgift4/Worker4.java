@@ -85,8 +85,9 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
         //loop deposit and withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
             bank.tell(new Bank.DepositMoneyToAccount(currentAccount, 10));
+            System.out.println("Deposit");
             bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
-            System.out.println("both");
+            System.out.println("Withdraw");
             currentAccount++;
             if(currentAccount== accounts)
                 currentAccount = 0;
