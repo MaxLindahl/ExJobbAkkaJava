@@ -7,6 +7,7 @@ import com.typesafe.config.ConfigFactory;
 public class Main3 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
+        int numberOfWorkers = 1;
         ConfigFactory.load("src/main/resources/application.conf");
 
         //#actor-system
@@ -15,7 +16,7 @@ public class Main3 {
 
         //#main-send-messages
         //set how many numbers we will search and how many workers to spawn
-        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(100000, timeBeforeSetup));
+        mainActor.tell(new com.uppgift3.MainActor3.SetNumberOfWorkers(numberOfWorkers, timeBeforeSetup));
         //tell it to start
         mainActor.tell(com.uppgift3.MainActor3.Start.INSTANCE);
         //#main-send-messages

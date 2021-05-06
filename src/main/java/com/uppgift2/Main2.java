@@ -8,8 +8,8 @@ public class Main2 {
         long timeBeforeSetup = System.nanoTime();
         ConfigFactory.load("src/main/resources/application.conf");
         int numberOfTasks = 200000;
-        int noProducers = 2;
-        int noConsumers = 6;
+        int noProducers = 1024;
+        int noConsumers = 1024;
 
         //#actor-system
         ActorSystem<MainActor2.Command> mainActor = ActorSystem.create(MainActor2.create(), "mainActorSystem");

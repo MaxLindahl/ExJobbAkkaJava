@@ -87,6 +87,7 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
 
     private Behavior<Command> onWorkerReturn(WorkerReturn command){
         workersReturned++;
+        System.out.println("Worker returned");
         if(workersReturned==numberOfWorkers) {
             timeDone = System.nanoTime();
             System.out.println("Work completed!");
@@ -102,15 +103,14 @@ public class MainActor3 extends AbstractBehavior<MainActor3.Command> {
     }
 
     private Behavior<Command> onStart() {
-        System.out.println("Start command received");
         //Create a list to store the workers in
         List<ActorRef<Worker3.Command>> workerList = new ArrayList<>();
         //Spawn workers and store them in the list
         for(int i = 0; i < numberOfWorkers; i++){
             //workerList.add(getContext().spawn(Worker3.create(), "Worker4"+i));
             workerList.add(getContext().spawn(Worker3.create(), "Worker"+i, DispatcherSelector.fromConfig("third-dispatcher")));
+            System.out.println("Thread " + i + " created");
         }
-        System.out.println(numberOfWorkers + " Workers created");
         timeAfterSetup = System.nanoTime();
         for(ActorRef<Worker3.Command> worker : workerList){
             worker.tell(new Worker3.DoWork(getContext().getSelf()));
