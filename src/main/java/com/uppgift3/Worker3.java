@@ -52,14 +52,14 @@ public class Worker3 extends AbstractBehavior<Worker3.Command> {
 
     /////////////////////////////////////////// Do things after a message has been received //////////////////////////////////////////////////////////
 
-    private Behavior<Command> onDoWork(DoWork command){
+    private Behavior<Command> onDoWork(DoWork message){
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        command.mainActor.tell(new com.uppgift3.MainActor3.WorkerReturn());
+        message.mainActor.tell(new com.uppgift3.MainActor3.WorkerReturn());
         return this;
     }
 }

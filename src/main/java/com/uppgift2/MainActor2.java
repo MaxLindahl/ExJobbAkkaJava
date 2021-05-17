@@ -128,7 +128,6 @@ public class MainActor2 extends AbstractBehavior<MainActor2.Command> {
     }
 
 
-    //prob only works properly with even number of workers
     private void tellProducerToProduce(){
         producers.get(producerCounter).tell(new Producer.Produce(messageHandler));
         if(producerCounter==(noProducers-1))

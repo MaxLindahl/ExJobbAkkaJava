@@ -8,10 +8,12 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 
+import java.util.ArrayList;
+
 public class Worker4 extends AbstractBehavior<Worker4.Command> {
 
     //the bank we will work with
-    private ActorRef<Bank.Command> bank;
+    private ArrayList<ActorRef> bankAccounts;
     private ActorRef<MainActor4.Command> mainActor;
     //how many times we want to interact with the bank per loop
     private int loops = 100000;
@@ -41,12 +43,12 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
      * Constructor
      * @param context
      */
-    private Worker4(ActorContext<Command> context, int loops, int accounts, ActorRef mainActor, ActorRef bank) {
+    private Worker4(ActorContext<Command> context, int loops, int accounts, ActorRef mainActor, ArrayList<ActorRef> bankAccounts) {
         super(context);
         this.loops = loops;
         this.accountsCreated = accounts;
         this.mainActor = mainActor;
-        this.bank = bank;
+        this.bankAccounts = bankAccounts;
     }
 
 
@@ -54,8 +56,8 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
      * Factory method
      * @return
      */
-    public static Behavior<Command> create(int loops, int accounts, ActorRef mainActor, ActorRef bank) {
-        return Behaviors.setup(context -> new Worker4(context, loops, accounts, mainActor, bank));
+    public static Behavior<Command> create(int loops, int accounts, ActorRef mainActor, ArrayList<ActorRef> bankAccounts) {
+        return Behaviors.setup(context -> new Worker4(context, loops, accounts, mainActor, bankAccounts));
     }
 
 
@@ -68,7 +70,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
 
         //loop deposit 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.DepositMoneyToAccount(currentAccount,10));
+            bankAccounts.get(currentAccount).tell(new Bank.DepositMoneyToAccount(10));
             System.out.println("Deposit");
             currentAccount++;
             if(currentAccount==accountsCreated)
@@ -76,7 +78,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
         }
         //loop withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
+            bankAccounts.get(currentAccount).tell(new Bank.WithdrawMoneyFromAccount(10));
             System.out.println("Withdraw");
             currentAccount++;
             if(currentAccount==accountsCreated)
@@ -84,9 +86,9 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
         }
         //loop deposit and withdraw 10 moneys into alternating accounts
         for(int i = 0; i < loops; i++){
-            bank.tell(new Bank.DepositMoneyToAccount(currentAccount, 10));
+            bankAccounts.get(currentAccount).tell(new Bank.DepositMoneyToAccount(10));
             System.out.println("Deposit");
-            bank.tell(new Bank.WithdrawMoneyFromAccount(currentAccount, 10));
+            bankAccounts.get(currentAccount).tell(new Bank.WithdrawMoneyFromAccount(10));
             System.out.println("Withdraw");
             currentAccount++;
             if(currentAccount==accountsCreated)
