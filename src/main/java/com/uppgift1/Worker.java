@@ -64,7 +64,7 @@ public class Worker extends AbstractBehavior<Worker.Command> {
         return this;
     }
 
-    static long findPrimes(long maxNumber, long skipLength, long startNumber) {
+    private static long findPrimes(long maxNumber, long skipLength, long startNumber) {
         long counter = 0;
         boolean isDividable = false;
         for(long number = startNumber; number<=maxNumber; number+=skipLength) {

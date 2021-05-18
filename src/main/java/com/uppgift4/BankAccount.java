@@ -1,23 +1,22 @@
 package com.uppgift4;
 
 public class BankAccount {
-    private int id;
-    private int balance;
+    private int money;
 
-    public BankAccount(int id, int balance){
-        this.id = id;
-        this.balance = balance;
+    public BankAccount(int money){
+        this.money = money;
     }
 
-    public void deposit(int balance){
-        this.balance +=balance;
+    public void depositMoney(int money){
+        this.money+=money;
     }
 
-    public void withdraw(int balance){
-        this.balance -=balance;
+    public void withdrawMoney(int money){
+        this.money-=money;
     }
 
-    public int getBalance() {
-        return balance;
+
+    public int getMoney() {
+        return money;
     }
 }
