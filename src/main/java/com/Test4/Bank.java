@@ -149,10 +149,11 @@ public class Bank extends AbstractBehavior<Bank.Command> {
             if(currentAccount== accountsToCreate)
                 currentAccount = 0;
         }
-        for(ActorRef<Account.Command> a : accounts)
-            a.tell(new Account.GetMoneyFromAccount());
+
 
         timeDone = System.nanoTime();
+        for(ActorRef<Account.Command> a : accounts)
+            a.tell(new Account.GetMoneyFromAccount());
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

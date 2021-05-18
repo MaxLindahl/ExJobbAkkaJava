@@ -19,8 +19,6 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     private ActorRef<Bank.Command> bank;
     //references to all workers
     private ArrayList<ActorRef<Worker4.Command>> workers = new ArrayList<>();
-    //store references to all bank accounts
-    private ArrayList<ActorRef> bankAccounts = new ArrayList<>();
     //accounts we will create in the bank(prob need to change accountsCreated in Worker4 if you touch this :)
     private int accountsToCreate = 0;
     //track how many workers have completed the work
@@ -122,8 +120,8 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
             System.out.println("Setup time: " + (timeAfterSetup-timeBeforeSetup)/1.0E9);
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
-            for(ActorRef bank : bankAccounts) {
-                bank.tell(new Bank.GetMoneyFromAccount(getContext().getSelf()));
+            for(int i = 0; i < accountsToCreate; i++) {
+                //bank.tell(new Bank.GetMoneyFromAccount(i, getContext().getSelf()));
             }
         }
 
@@ -132,13 +130,16 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
 
 
     private Behavior<MainActor4.Command> onStart() {
-        //spawn x banks for x accounts
+        //create a bank
+        bank = getContext().spawn(Bank.create(), "Bank");
+
+        //create accountsToCreate many accounts in the bank
         for(int i = 0; i < accountsToCreate; i++) {
-            bankAccounts.add(getContext().spawn(Bank.create(i), "Account"+i, DispatcherSelector.fromConfig("fourth-dispatcher")));
+            bank.tell(new Bank.CreateAccount(0));
         }
         //create workers (actors who will interact with the bank)
         for(int i = 0; i < numberOfWorkers; i++){
-            workers.add(getContext().spawn(Worker4.create(loops, accountsToCreate, getContext().getSelf(), bankAccounts), "Worker"+i, DispatcherSelector.fromConfig("fourth-dispatcher")));
+            workers.add(getContext().spawn(Worker4.create(loops, accountsToCreate, getContext().getSelf(), bank), "Worker"+i, DispatcherSelector.fromConfig("fourth-dispatcher")));
         }
 
         timeAfterSetup = System.nanoTime();

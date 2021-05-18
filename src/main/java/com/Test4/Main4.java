@@ -6,8 +6,9 @@ import com.typesafe.config.ConfigFactory;
 public class Main4 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
-        int accounts = 500;
-        int loops = 1000;
+        int workers = 128;
+        int accounts = 2;
+        int loops = 8000;
         ConfigFactory.load("src/main/resources/application.conf");
         //#actor-system
         ActorSystem<Bank.Command> mainActor = ActorSystem.create(Bank.create(), "mainActorSystem");
