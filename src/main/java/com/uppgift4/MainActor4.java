@@ -134,7 +134,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
     private Behavior<MainActor4.Command> onStart() {
         //spawn x banks for x accounts
         for(int i = 0; i < accountsToCreate; i++) {
-            bankAccounts.add(getContext().spawn(Bank.create(i), "Account"+i, DispatcherSelector.fromConfig("fourth-dispatcher")));
+            bankAccounts.add(getContext().spawn(Bank.create(i), "Account"+i, DispatcherSelector.fromConfig("fourth-dispatcher-accounts")));
         }
         //create workers (actors who will interact with the bank)
         for(int i = 0; i < numberOfWorkers; i++){
