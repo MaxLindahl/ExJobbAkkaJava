@@ -16,8 +16,8 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     private ArrayList<ActorRef> bankAccounts;
     private ActorRef<MainActor4.Command> mainActor;
     //how many times we want to interact with the bank per loop
-    private int loops;
-    private int accounts;
+    private int loops = 100000;
+    private int accountsCreated = 10;
 
     interface Command{}
 
@@ -46,7 +46,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
     private Worker4(ActorContext<Command> context, int loops, int accounts, ActorRef mainActor, ArrayList<ActorRef> bankAccounts) {
         super(context);
         this.loops = loops;
-        this.accounts = accounts;
+        this.accountsCreated = accounts;
         this.mainActor = mainActor;
         this.bankAccounts = bankAccounts;
     }
@@ -73,7 +73,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
             bankAccounts.get(currentAccount).tell(new Bank.DepositMoneyToAccount(10));
             System.out.println("Deposit");
             currentAccount++;
-            if(currentAccount== accounts)
+            if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
         //loop withdraw 10 moneys into alternating accounts
@@ -81,7 +81,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
             bankAccounts.get(currentAccount).tell(new Bank.WithdrawMoneyFromAccount(10));
             System.out.println("Withdraw");
             currentAccount++;
-            if(currentAccount== accounts)
+            if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
         //loop deposit and withdraw 10 moneys into alternating accounts
@@ -91,7 +91,7 @@ public class Worker4 extends AbstractBehavior<Worker4.Command> {
             bankAccounts.get(currentAccount).tell(new Bank.WithdrawMoneyFromAccount(10));
             System.out.println("Withdraw");
             currentAccount++;
-            if(currentAccount== accounts)
+            if(currentAccount==accountsCreated)
                 currentAccount = 0;
         }
         mainActor.tell(MainActor4.WorkFinished.INSTANCE);

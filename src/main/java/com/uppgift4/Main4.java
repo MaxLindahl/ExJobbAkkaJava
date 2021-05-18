@@ -7,7 +7,7 @@ public class Main4 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
         int workers = 128;
-        int accounts = 4;
+        int accounts = 2;
         int loops = 1000;
 
         ConfigFactory.load("src/main/resources/application.conf");
