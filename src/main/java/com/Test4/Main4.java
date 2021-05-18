@@ -6,8 +6,7 @@ import com.typesafe.config.ConfigFactory;
 public class Main4 {
     public static void main(String[] args) {
         long timeBeforeSetup = System.nanoTime();
-        int workers = 50;
-        int accounts = 50;
+        int accounts = 500;
         int loops = 1000;
         ConfigFactory.load("src/main/resources/application.conf");
         //#actor-system
@@ -15,7 +14,7 @@ public class Main4 {
         //#actor-system
 
         //#main-send-messages
-        mainActor.tell(new Bank.SetNumberOfWorkersAndAccountsAndLoops(accounts, loops,workers, timeBeforeSetup));
+        mainActor.tell(new Bank.SetNumberOfWorkersAndAccountsAndLoops(accounts, loops, timeBeforeSetup));
         //tell it to start
         mainActor.tell(Bank.Start.INSTANCE);
         //#main-send-messages

@@ -26,7 +26,6 @@ public class Account extends AbstractBehavior<Account.Command> {
     public static class GetMoneyFromAccount implements Command {
 
         public GetMoneyFromAccount(){
-
         }
     }
 
