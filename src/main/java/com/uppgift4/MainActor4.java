@@ -15,8 +15,6 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
 
     //number of workers who will interact with the bank
     private int numberOfWorkers;
-    //the bank
-    private ActorRef<Bank.Command> bank;
     //references to all workers
     private ArrayList<ActorRef<Worker4.Command>> workers = new ArrayList<>();
     //store references to all bank accounts
@@ -123,7 +121,7 @@ public class MainActor4 extends AbstractBehavior<MainActor4.Command> {
             System.out.println("Execution time: " + (timeDone-timeAfterSetup)/1.0E9);
             System.out.println("Total time: " + (timeDone-timeBeforeSetup)/1.0E9);
             for(ActorRef bank : bankAccounts) {
-                bank.tell(new Bank.GetMoneyFromAccount(getContext().getSelf()));
+                //bank.tell(new Bank.GetMoneyFromAccount(getContext().getSelf()));
             }
         }
 
